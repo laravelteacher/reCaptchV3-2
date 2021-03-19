@@ -27,7 +27,17 @@ step 2 - put the below new code in registerController
     $response = json_decode($encoded_response, true);
     curl_close($ch);
     // in this part if response of reCaptchs is correct do another function like Register
-    if($response['success'] && $response['action'] == 'homepage' && $response['score']>0.5){
+    if($request->input('recaptcha_v3')=='null'){
+        return redirect()->back()->withErrors(['recaptcha_v3' => 'you are bot']);
+    }
+    elseif(!$response['success']){
+        return redirect()->back()->withErrors(['recaptcha_v3' => 'you arent success']);
+    }
+    elseif(!$response['action'] == 'homepage'){
+        return redirect()->back()->withErrors(['recaptcha_v3' => 'you arent homepage']);
+    }
+    if($response['success']) {
+    if($response['action'] == 'homepage'){ if($response['score']>0.5) {
         if($this->validate($request, [
             'password' => ['required', 'string', 'min:8', 'confirmed']
         ])){
@@ -40,9 +50,10 @@ step 2 - put the below new code in registerController
       }else{
         return redirect()->back()->withErrors(['password' => 'The Password isnt match']);
            }
-    } else {
+    }}} else {
          return redirect()->back()->withErrors(['recaptcha_v3' => 'you are Robote']);
     }
+}
 }
 
 
