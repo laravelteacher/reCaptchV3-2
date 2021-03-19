@@ -12,13 +12,17 @@ step 1 - if we wanna this project in Register, we need a make new RegisterContro
 step 2 - put the below new code in registerController
 
 
+ class registerController extends Controller
+{
+    
+ //  this is most important part of reCaptcha V3
     public function register(Request $request)
 {
     $vars = array(
-        'secret' => env('G_RECAPTCHA_SECRET_KEY'),
+        'secret' => env('G_RECAPTCHA_SECRET_KEY'),  // this part get secret key in .env
         "response" => $request->input('recaptcha_v3')
     );
-    $url = "https://www.google.com/recaptcha/api/siteverify";
+    $url = "https://www.google.com/recaptcha/api/siteverify"; // this part is fix to relation google and our App
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -26,21 +30,25 @@ step 2 - put the below new code in registerController
     $encoded_response = curl_exec($ch);
     $response = json_decode($encoded_response, true);
     curl_close($ch);
+    // in this part if response of reCaptchs is correct do another function like Register
+    if($response['success'] && $response['action'] == 'homepage' && !$response['score']>0.5){
+        return redirect()->back()->withErrors(['password' => 'The Password isnt match']);
+    }
     if($response['success'] && $response['action'] == 'homepage' && $response['score']>0.5) {
-    //     if($this->validate($request, [
-    //         'password' => ['required', 'string', 'min:8', 'confirmed']
-    //     ])){
-    //     User::create([
-    //         'name' => $request['name'],
-    //         'email' => $request['email'],
-    //         'password' => Hash::make($request['password']),
-    //     ]);
-    //     return redirect('login');
-    // }else{
-    //     return redirect()->back()->withErrors(['password' => 'The Password isnt match']);
-    // }
+        if($this->validate($request, [
+            'password' => ['required', 'string', 'min:8', 'confirmed']
+        ])){
+        User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+        ]);
+        return redirect('login');
+    }else{
+        return redirect()->back()->withErrors(['password' => 'The Password isnt match']);
+    }
     } else {
-        // return redirect()->back()->withErrors(['recaptcha_v3' => 'The reCaptcha_v3 is required']);
+         return redirect()->back()->withErrors(['recaptcha_v3' => 'you are Robote']);
     }
 }
 
