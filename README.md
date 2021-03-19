@@ -14,10 +14,6 @@ step 2 - put the below new code in registerController
 
  class registerController extends Controller
 {
-    
- //  this is most important part of reCaptcha V3
-    public function register(Request $request)
-{
     $vars = array(
         'secret' => env('G_RECAPTCHA_SECRET_KEY'),  // this part get secret key in .env
         "response" => $request->input('recaptcha_v3')
@@ -31,10 +27,7 @@ step 2 - put the below new code in registerController
     $response = json_decode($encoded_response, true);
     curl_close($ch);
     // in this part if response of reCaptchs is correct do another function like Register
-    if($response['success'] && $response['action'] == 'homepage' && !$response['score']>0.5){
-        return redirect()->back()->withErrors(['password' => 'The Password isnt match']);
-    }
-    if($response['success'] && $response['action'] == 'homepage' && $response['score']>0.5) {
+    if($response['success'] && $response['action'] == 'homepage' && $response['score']>0.5){
         if($this->validate($request, [
             'password' => ['required', 'string', 'min:8', 'confirmed']
         ])){
@@ -44,9 +37,9 @@ step 2 - put the below new code in registerController
             'password' => Hash::make($request['password']),
         ]);
         return redirect('login');
-    }else{
+      }else{
         return redirect()->back()->withErrors(['password' => 'The Password isnt match']);
-    }
+           }
     } else {
          return redirect()->back()->withErrors(['recaptcha_v3' => 'you are Robote']);
     }
