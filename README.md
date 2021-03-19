@@ -14,6 +14,8 @@ step 2 - put the below new code in registerController
 
  class registerController extends Controller
 {
+   public function register(Request $request)
+{
     $vars = array(
         'secret' => env('G_RECAPTCHA_SECRET_KEY'),  // this part get secret key in .env
         "response" => $request->input('recaptcha_v3')
