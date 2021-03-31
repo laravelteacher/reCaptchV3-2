@@ -5,7 +5,7 @@ https://youtu.be/YK6wqFcMkHM
                     
                     How to make a reCaptch V3 in Laravel App with validate
 
-step 1 - if we wanna this project in Register, we need a make new RegisterController so writeh in Terminal
+step 1 - if we want this project in Register, we need a make new RegisterController so writeh in Terminal
 
   php artisan make:controller registerController
   
